@@ -6,11 +6,17 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.LinearLayout
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
 class HeadlineFragment : Fragment() {
+
+    lateinit var recyclerView: RecyclerView
+
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -31,12 +37,15 @@ class HeadlineFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        recyclerView  = view.findViewById(R.id.rView)
+
+        recyclerView.layoutManager = LinearLayoutManager(context)
 
         getNews()
     }
 
     private fun getNews() {
-        val apiKey = "YourApi key"
+        val apiKey = "YourKEey"
         val request = newsApiHit.getNewsInstance().getHeadlines("in" , apiKey)
         request.enqueue(NewsCallBack())
 
@@ -47,6 +56,13 @@ class HeadlineFragment : Fragment() {
             Log.d("HeadLine" , "news are ${response.body()}")
             if(response.isSuccessful){
                 Log.d("HeadLine" , "news are ${response.body()}" )
+                val news = response.body()
+                Log.d("HeadLine" , " news number are ${news?.articles?.size}")
+
+                news?.let {
+                    recyclerView.adapter = NewsAdapter(it.articles)
+                }
+
             }
         }
 
